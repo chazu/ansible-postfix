@@ -5,7 +5,7 @@ Ansible role which manage postfix
 
 #### Usage
 
-Add `squads-postfix` to your roles and set vars in your playbook file.
+Add `squads.postfix` to your roles and set vars in your playbook file.
 
 Example:
 
@@ -14,7 +14,7 @@ Example:
 - hosts: all
 
   roles:
-    - squads-postfix
+    - squads.postfix
 
   vars:
     # Example configuration for gmail
