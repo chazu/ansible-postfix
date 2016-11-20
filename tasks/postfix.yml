@@ -1,0 +1,18 @@
+---
+
+- name: Install postfix (Debian)
+  apt: name=postfix
+
+- name: Ensure /etc/postfix directory is owned by root user
+  file: path=/etc/postfix owner=root
+  notify: postfix restart
+
+- name: Update postfix main configuration
+  template: src=main.cf.j2 dest=/etc/postfix/main.cf owner=root group=root mode=0644
+  notify: postfix restart
+
+- name: Create postfix alias database
+  command: /usr/sbin/postaliases /etc/aliases creates=/etc/aliases.db
+
+- name: Ensure Postfix is started
+  service: name=postfix state=started enabled=yes
