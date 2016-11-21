@@ -16,7 +16,7 @@ Example:
     - salandur.postfix
 
   vars:
-    postfix_relayhost: "[your-mail-provider]:587"
+    postfix_relayhost: "[your-mail-provider]:25"
 ```
 
 #### License
