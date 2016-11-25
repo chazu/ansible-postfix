@@ -1,2 +1,3 @@
 ---
-# postfix_relayhost: newsmtp.localdomain
+#postfix_relayhost: newsmtp.localdomain
+#postfix_test_email_address: jruijgers@salandur.nl

@@ -8,9 +8,10 @@
   command: debconf-set-selections /root/postfix.conf
   become: yes
 
-- name: Install postfix (Debian)
+- name: Install postfix
   apt: name=postfix
   become: yes
+  notify: postfix send test mail
 
 - name: Ensure /etc/postfix directory is owned by root user
   file: path=/etc/postfix owner=root
@@ -19,6 +20,7 @@
 
 - name: Configure postfix relay host
   lineinfile: "dest=/etc/postfix/main.cf regexp='^relayhost.*' line='relayhost = {{ postfix_relayhost }}'"
+  when: (postfix_relayhost is defined)
   become: yes
   notify: postfix restart
 
@@ -34,4 +36,8 @@
 
 - name: Ensure Postfix is started
   service: name=postfix state=started enabled=yes
+  become: yes
+
+- name: Install mailutils
+  apt: name=mailutils
   become: yes
