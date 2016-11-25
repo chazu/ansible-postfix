@@ -3,10 +3,12 @@
 - name: Set postfix install configuration 1/2
   template: src=postfix.conf.j2 dest=/root/postfix.conf owner=root group=root mode=0644
   become: yes
+  register: postfix_conf_updated
 
 - name: Set postfix install configuration 2/2
   command: debconf-set-selections /root/postfix.conf
   become: yes
+  when: postfix_conf_updated|skipped
 
 - name: Install postfix
   apt: name=postfix
