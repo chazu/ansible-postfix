@@ -1,18 +1,37 @@
 ---
 
+- name: Set postfix install configuration 1/2
+  template: src=postfix.conf.j2 dest=/root/postfix.conf owner=root group=root mode=0644
+  become: yes
+
+- name: Set postfix install configuration 2/2
+  command: debconf-set-selections /root/postfix.conf
+  become: yes
+
 - name: Install postfix (Debian)
   apt: name=postfix
+  become: yes
 
 - name: Ensure /etc/postfix directory is owned by root user
   file: path=/etc/postfix owner=root
+  become: yes
   notify: postfix restart
 
-- name: Update postfix main configuration
-  template: src=main.cf.j2 dest=/etc/postfix/main.cf owner=root group=root mode=0644
+- name: Configure postfix relay host
+  lineinfile: "dest=/etc/postfix/main.cf regexp='^relayhost.*' line='relayhost = {{ postfix_relayhost }}'"
+  become: yes
+  notify: postfix restart
+
+- name: Postfix | Redirect root mails
+  lineinfile: "dest=/etc/aliases regexp='^root.*' line='root: {{root_mail_address}}'"
+  when: (root_mail_address is defined) and (root_mail_address != "")
+  become: yes
   notify: postfix restart
 
 - name: Create postfix alias database
   command: /usr/sbin/postaliases /etc/aliases creates=/etc/aliases.db
+  become: yes
 
 - name: Ensure Postfix is started
   service: name=postfix state=started enabled=yes
+  become: yes
