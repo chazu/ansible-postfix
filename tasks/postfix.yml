@@ -8,11 +8,14 @@
 - name: Set postfix install configuration 2/2
   command: debconf-set-selections /root/postfix.conf
   become: yes
-  when: postfix_conf_updated|skipped
+  when: postfix_conf_updated.changed
 
-- name: Install postfix
-  apt: name=postfix
+- name: Install postfix and mailutils
+  apt: name={{ item }}
   become: yes
+  with_items:
+    - postfix
+    - mailutils
   notify: postfix send test mail
 
 - name: Ensure /etc/postfix directory is owned by root user
@@ -38,8 +41,4 @@
 
 - name: Ensure Postfix is started
   service: name=postfix state=started enabled=yes
-  become: yes
-
-- name: Install mailutils
-  apt: name=mailutils
   become: yes
