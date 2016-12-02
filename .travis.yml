@@ -23,7 +23,6 @@ env:
 branches:
   only:
     - master
-    - develop
 
 before_install:
  - sudo apt-add-repository ppa:ansible/ansible -y
@@ -50,4 +49,4 @@ script:
   - ps -ef | grep /usr/lib/postfix | grep -v grep || exit 1
 
 #notifications:
-#  webhooks: https://galaxy.ansible.com/api/v1/notifications/
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
