@@ -4,6 +4,6 @@
   service: name=postfix state=restarted
   notify: postfix send test mail
 
-- name: "postfix send test mail"
+- name: postfix send test mail
   shell: echo "Test mail from new/updated postfix at" `hostname` | mail {{postfix_test_email_address}} -s "Test SMTP `hostname`"
   when: (postfix_test_email_address is defined) and (postfix_test_email_address != "")

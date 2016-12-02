@@ -1,4 +1,3 @@
 ---
 postfix_enabled: yes # The role is enabled
-postfix_mailer_type: "Satellite system"
-postfix_myhostname: "{{ansible_hostname}}"
+postfix_hosttype: "localhost"

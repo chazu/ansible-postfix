@@ -1,44 +1,26 @@
 ---
 
-- name: Set postfix install configuration 1/2
-  template: src=postfix.conf.j2 dest=/root/postfix.conf owner=root group=root mode=0644
-  become: yes
-  register: postfix_conf_updated
-
-- name: Set postfix install configuration 2/2
-  command: debconf-set-selections /root/postfix.conf
-  become: yes
-  when: postfix_conf_updated.changed
-
-- name: Install postfix and mailutils
+- name: Postfix | Install | Install postfix and mailutils
   apt: name={{ item }}
   become: yes
   with_items:
     - postfix
     - mailutils
   notify: postfix send test mail
+  tags: postfix
 
-- name: Ensure /etc/postfix directory is owned by root user
+- name: Postfix | Configure | Ensure /etc/postfix directory is owned by root user
   file: path=/etc/postfix owner=root
   become: yes
   notify: postfix restart
+  tags: postfix
 
-- name: Configure postfix relay host
-  lineinfile: "dest=/etc/postfix/main.cf regexp='^relayhost.*' line='relayhost = {{ postfix_relayhost }}'"
-  when: (postfix_relayhost is defined)
+- name: Postfix | Configure | Main configuration
+  template: src=main.cf.j2 dest=/etc/postfix/main.cf
   become: yes
   notify: postfix restart
+  tags: postfix
 
-- name: Postfix | Redirect root mails
-  lineinfile: "dest=/etc/aliases regexp='^root.*' line='root: {{root_mail_address}}'"
-  when: (root_mail_address is defined) and (root_mail_address != "")
-  become: yes
-  notify: postfix restart
-
-- name: Create postfix alias database
-  command: /usr/sbin/postaliases /etc/aliases creates=/etc/aliases.db
-  become: yes
-
-- name: Ensure Postfix is started
+- name: Postfix | Ensure Postfix is started
   service: name=postfix state=started enabled=yes
   become: yes
